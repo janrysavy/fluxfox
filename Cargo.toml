@@ -130,7 +130,7 @@ tokio = { version = "1", optional = true, features = ["full"] }
 # Wasm32 dependencies
 # ----------------------------------------------------------------------------------------------------------------------
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.4", features = ["wasm_js"] }
 zip = { version = "8.6", default-features = false, features = ["deflate", "deflate64", "lzma"], optional = true }
 tar = { version = "0.4", optional = true }
 # Version of time must match time depdendency of zip
@@ -177,7 +177,7 @@ num-derive = "0.4"
 # modular-bitfield implements enum-capable bitfields. Currently only used by the IPF parser
 modular-bitfield = "0.11"
 # rand is used for random number generation, primarily for generating random bits for fuzzy/weak bits
-rand = "0.8"
+rand = "0.10"
 # web-time is a wasm-compatible replacement for std::time
 web-time = "1.1"
 # wasm-bindgen is used for the web buids of fluxfox_egui
