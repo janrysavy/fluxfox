@@ -123,7 +123,7 @@ optional = true
 # Native dependencies
 # ----------------------------------------------------------------------------------------------------------------------
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-zip = { version = "2.3", default-features = false, features = ["bzip2", "deflate", "deflate64", "lzma", "time", "zstd"], optional = true }
+zip = { version = "8.6", default-features = false, features = ["bzip2", "deflate", "deflate64", "lzma", "time", "zstd"], optional = true }
 tar = { version = "0.4", optional = true }
 tokio = { version = "1", optional = true, features = ["full"] }
 
@@ -131,7 +131,7 @@ tokio = { version = "1", optional = true, features = ["full"] }
 # ----------------------------------------------------------------------------------------------------------------------
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.2", features = ["js"] }
-zip = { version = "2.1", default-features = false, features = ["deflate", "deflate64", "lzma"], optional = true }
+zip = { version = "8.6", default-features = false, features = ["deflate", "deflate64", "lzma"], optional = true }
 tar = { version = "0.4", optional = true }
 # Version of time must match time depdendency of zip
 #time = { version = "0.3", features = ["wasm-bindgen"], optional = true }
@@ -168,7 +168,7 @@ bytemuck = "1.7"
 # regular expressions are used for file matching - notably expanding a raw kryoflux stream filename into a file set
 regex = "1.11"
 # strum is used to for useful macros, such as deriving iterators over enums
-strum = { version = "0.26", features = ["derive"] }
+strum = { version = "0.28", features = ["derive"] }
 # typetag is used for serialization / deserialization of dyn trait objects ('serde' feature)
 typetag = "0.2"
 # Num-traits and num-derive are used by retrocompressor ('td0' feature) and visualizations ('viz' feature)
