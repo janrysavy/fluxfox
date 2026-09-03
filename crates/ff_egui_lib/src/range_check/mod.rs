@@ -23,11 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 
     --------------------------------------------------------------------------
-
-    src/range_check.rs
-
-    Implement an O(log n) range checker for detecting if a value is within a range.
 */
+
+//! #  RangeChecker module
+//!
+//! Implement an O(log n) range checker for detecting if a value is within a range.
 
 #[derive(Default)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
