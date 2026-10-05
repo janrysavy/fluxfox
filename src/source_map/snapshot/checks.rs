@@ -31,7 +31,19 @@ fn source_map_native_tree_restores_values_duplicate_names_and_append_continuatio
     let before = wire(&image);
     // Independent public-native baseline: unchanged pinned dependency, not
     // this snapshot module. Full raw receipt lives in the parent's evidence.
-    let baseline: Value = serde_json::from_str(include_str!("native_baseline.json")).unwrap();
+    // Pin the complete fixture (canonical LF) and the original probe product.
+    // The parent's SHA-256-pinned native receipt independently binds both trees
+    // and this product, rather than trusting the fixture's own metadata.
+    let fixture = include_str!("native_baseline.json").replace("\r\n", "\n");
+    assert_eq!(
+        sha1_smol::Sha1::from(fixture.as_bytes()).digest().to_string(),
+        "678c80f6464f3410c818f1b34450e7a98750b708"
+    );
+    let baseline: Value = serde_json::from_str(&fixture).unwrap();
+    assert_eq!(
+        baseline["native_product_sha256"],
+        "aea2daab87c13b31b6a9e562fc2225c05a8d5ac468ca5a83667c7e00308a496e"
+    );
     assert_eq!(
         baseline["dependency_commit"],
         "5a1fb83656c3b6f933d9f91198dcca90658bfd26"

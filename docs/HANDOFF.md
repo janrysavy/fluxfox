@@ -28,8 +28,11 @@ Latest review found empty null owner acceptance, unpinned native fixture provena
 and snapshot-only strictness applied to ordinary serde. Empty null capture/restore
 is now refused; actual omission fails the new test, exact restoration precedes
 fresh source-bound 71 serde/60 native tests. The live owner stays unchanged.
-Fixture provenance and ordinary-serde compatibility fixes remain WIP; no final
-review or final-head CI claim for this follow-up yet.
+Fixture provenance is now mechanically pinned (full canonical-LF fixture hash,
+original product SHA-256 and independently checked native receipt). Actual
+product-hash corruption passes the old test, fails after the pin; exact fixture
+restoration precedes fresh all-input-bound71/60 products. Ordinary-serde
+compatibility remains WIP; no final review/CI claim for this follow-up yet.
 
 Next: finish source-map final gates/review/CI and linear integration; then full
 media payload/weak-bit entropy/external owners, FDC/drive state and Machine/process
