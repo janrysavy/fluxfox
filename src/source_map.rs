@@ -451,7 +451,7 @@ impl OptionalSourceMap for SourceMap {
 }
 
 // Null implementation of SourceMap that does nothing
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize))]
 #[derive(Clone)]
 pub struct NullSourceMap {
     tree: FoxTreeMap<SourceValue>,

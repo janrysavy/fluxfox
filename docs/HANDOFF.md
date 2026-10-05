@@ -44,6 +44,12 @@ are constructor-fixed: actual omitted name guard fails; exact restoration
 precedes fresh all-input-bound73/60 products. Parent's executable replay gate
 executes the SHA-256-pinned original product and checks full trees against both
 fixture and frozen receipt; wrong product is refused. Final review/CI pending.
+Follow-up removes the newly added public NullSourceMap Deserialize: native null
+construction stays opaque; snapshot-only strict wire decoders construct the owner.
+All ten actual omissions are now rerun on this production; exact restoration
+precedes fresh all-input-bound73/60 products. Ordinary SourceMap tolerance is
+measured at four nested locations/three nullable fields, not claimed universal
+runtime compatibility of every serde consumer. Final review/CI remain pending.
 No completed media/controller/Machine/process restart is claimed.
 
 Next: finish source-map final gates/review/CI and linear integration; then full
