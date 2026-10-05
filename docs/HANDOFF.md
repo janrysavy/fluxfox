@@ -23,7 +23,13 @@ and independent clone/tree continuation. Full trees are compared in tests.
 Native decoded MFM weak bits also diverge after clone/JSON despite identical
 serialized state; 512 disabled-weak data bits match. RNG remains OPEN.
 Windows library suite passes 70 tests with the independent full-tree fixture.
-New source-bound product check/review/final CI pending.
+All-input-bound 70/60 products and final Windows/Linux CI pass on 74d66a8.
+Latest review found empty null owner acceptance, unpinned native fixture provenance
+and snapshot-only strictness applied to ordinary serde. Empty null capture/restore
+is now refused; actual omission fails the new test, exact restoration precedes
+fresh source-bound 71 serde/60 native tests. The live owner stays unchanged.
+Fixture provenance and ordinary-serde compatibility fixes remain WIP; no final
+review or final-head CI claim for this follow-up yet.
 
 Next: finish source-map final gates/review/CI and linear integration; then full
 media payload/weak-bit entropy/external owners, FDC/drive state and Machine/process

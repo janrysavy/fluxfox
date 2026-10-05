@@ -171,6 +171,25 @@ fn source_map_invalid_tree_and_schema_refused_without_mutating_original() {
     assert!(serde_json::from_value::<SourceMapSnapshot>(unknown).is_err());
 }
 
+#[test]
+fn source_map_impossible_empty_null_owner_refused_before_installation() {
+    let live = DiskImage::default();
+    let before = wire(&live);
+    let mut impossible = before.clone();
+    impossible["map"]["Null"]["tree"]["nodes"] = json!([]);
+    impossible["map"]["Null"]["tree"]["name_to_index"] = json!({});
+    let saved: SourceMapSnapshot = serde_json::from_value(impossible).unwrap();
+    assert!(live.clone().prepare_source_map_restore(&saved).is_err());
+    assert_eq!(wire(&live), before);
+    assert!(live.source_map().as_any().is::<NullSourceMap>());
+    let mut invalid_capture = live.clone();
+    invalid_capture.source_map = Some(Box::new(NullSourceMap {
+        tree: FoxTreeMap::default(),
+    }));
+    assert!(invalid_capture.snapshot_source_map().is_err());
+    println!("SOURCE_MAP: impossible empty null owner refused on capture and restore; live owner unchanged");
+}
+
 #[derive(Clone)]
 struct UnknownOwner(NullSourceMap);
 impl OptionalSourceMap for UnknownOwner {

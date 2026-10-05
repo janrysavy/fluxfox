@@ -24,8 +24,8 @@ impl SourceMapSnapshot {
         }
         let result = match &self.map {
             SavedMap::Absent => Ok(()),
-            SavedMap::Null(map) => map.tree.validate_snapshot(),
-            SavedMap::Tree(map) => map.map.validate_snapshot(),
+            SavedMap::Null(map) => map.tree.validate_snapshot(false),
+            SavedMap::Tree(map) => map.map.validate_snapshot(true),
         };
         result.map_err(|message| DiskImageError::ImageCorruptError(format!("source-map snapshot: {message}")))
     }

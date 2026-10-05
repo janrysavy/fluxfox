@@ -68,14 +68,15 @@ impl<T> FoxTreeMap<T> {
         }
     }
 
-    /// Validate nonempty source-map links; preserve native empty Default as
-    /// storage only. Its existing indexed consumers may panic, unchanged.
+    /// Validate source-map links. Only real SourceMap's derived Default can
+    /// natively be empty; its indexed consumers may panic, unchanged.
     /// Preserve native duplicate-name lookup (the last node wins), rather than
     /// rebuilding or normalizing it during snapshot restoration.
     #[cfg(feature = "serde")]
-    pub(crate) fn validate_snapshot(&self) -> Result<(), &'static str> {
+    pub(crate) fn validate_snapshot(&self, allow_empty: bool) -> Result<(), &'static str> {
         if self.nodes.is_empty() {
-            // Derived Default can produce an empty native map; preserve it.
+            if !allow_empty { return Err("null source-map missing root"); }
+            // Real SourceMap's derived Default is storage-only; preserve it.
             return if self.name_to_index.is_empty() { Ok(()) } else { Err("empty tree lookup") };
         }
         let mut incoming = vec![0usize; self.nodes.len()];
