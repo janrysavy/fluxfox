@@ -29,10 +29,14 @@
 
 use crate::{FoxHashMap, FoxHashSet};
 
+#[cfg(feature = "serde")]
+mod snapshot;
+#[cfg(feature = "serde")]
+pub(crate) use snapshot::deserialize_tree;
+
 // A generic node in a FoxTreeMap
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone)]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct FoxTreeNode<T> {
     pub name: String,
     pub index: usize,
@@ -43,7 +47,6 @@ pub struct FoxTreeNode<T> {
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Default)]
-#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct FoxTreeMap<T> {
     nodes: Vec<FoxTreeNode<T>>,
     name_to_index: FoxHashMap<String, usize>, // Name-to-index map for optional lookups

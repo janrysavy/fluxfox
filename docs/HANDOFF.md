@@ -31,8 +31,13 @@ fresh source-bound 71 serde/60 native tests. The live owner stays unchanged.
 Fixture provenance is now mechanically pinned (full canonical-LF fixture hash,
 original product SHA-256 and independently checked native receipt). Actual
 product-hash corruption passes the old test, fails after the pin; exact fixture
-restoration precedes fresh all-input-bound71/60 products. Ordinary-serde
-compatibility remains WIP; no final review/CI claim for this follow-up yet.
+restoration precedes fresh all-input-bound71/60 products. Strict nested decoding
+now belongs only to the snapshot format; native public serde derives retain the
+original tolerance. A fresh unchanged5a1fb836 probe proves four unknown-field
+locations/three nullable omissions; regression fails before the fix. All nine
+actual omissions fail their named tests, exact restoration precedes fresh
+all-input-bound72 serde/60 native products. Final scoped review/CI remain pending;
+no completed media/controller/Machine/process restart is claimed.
 
 Next: finish source-map final gates/review/CI and linear integration; then full
 media payload/weak-bit entropy/external owners, FDC/drive state and Machine/process

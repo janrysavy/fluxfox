@@ -3,6 +3,8 @@
 use super::*;
 use crate::{DiskImage, DiskImageError};
 
+mod wire;
+
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct SourceMapSnapshot {
@@ -13,8 +15,8 @@ pub struct SourceMapSnapshot {
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 enum SavedMap {
     Absent,
-    Null(NullSourceMap),
-    Tree(SourceMap),
+    Null(#[serde(deserialize_with = "wire::null")] NullSourceMap),
+    Tree(#[serde(deserialize_with = "wire::real")] SourceMap),
 }
 
 impl SourceMapSnapshot {

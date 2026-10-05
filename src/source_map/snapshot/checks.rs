@@ -305,3 +305,33 @@ fn source_map_nested_schema_rejects_unknown_and_missing_fields_with_explicit_nul
     }
     println!("SOURCE_MAP: nested native owner/tree/node/value schema refuses unknown and omitted fields; explicit nulls pass");
 }
+
+#[test]
+fn source_map_ordinary_serde_retains_pinned_native_field_tolerance() {
+    // Unchanged 5a1fb836 independently accepted these four unknown locations
+    // and all three omitted nullable keys; snapshot strictness is separate.
+    let good = serde_json::to_value(SourceMap::new()).unwrap();
+    for pointer in ["", "/map", "/map/nodes/0", "/map/nodes/0/data"] {
+        let mut extra = good.clone();
+        extra
+            .pointer_mut(pointer)
+            .unwrap()
+            .as_object_mut()
+            .unwrap()
+            .insert("future_field".into(), json!(7));
+        let read: SourceMap = serde_json::from_value(extra).unwrap();
+        assert_eq!(serde_json::to_value(read).unwrap(), good);
+    }
+    for field in ["scalar", "tip", "comment"] {
+        let mut missing = good.clone();
+        missing
+            .pointer_mut("/map/nodes/0/data")
+            .unwrap()
+            .as_object_mut()
+            .unwrap()
+            .remove(field);
+        let read: SourceMap = serde_json::from_value(missing).unwrap();
+        assert_eq!(serde_json::to_value(read).unwrap(), good);
+    }
+    println!("SOURCE_MAP: ordinary serde retains four native unknown-field and three nullable omission behaviors; snapshot remains strict");
+}
