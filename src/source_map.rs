@@ -55,6 +55,17 @@ use std::{
     fmt::{Debug, Display},
 };
 
+// Snapshot option fields must be present, with explicit null when absent.
+// Plain Option derive otherwise silently substitutes None for a missing field.
+#[cfg(feature = "serde")]
+fn required_option<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::Deserialize<'de>,
+{
+    serde::Deserialize::deserialize(deserializer)
+}
+
 /// An enum representing a data representation - either decimal, hexadecimal or binary.
 /// The internal value represents the number of digits to display. A value of 0 means
 /// no width specifier will be used when formatting.
@@ -138,11 +149,15 @@ pub enum ValueState {
 ///    the UI to the right of the value.
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Default)]
+#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct SourceValue {
+    #[cfg_attr(feature = "serde", serde(deserialize_with = "required_option"))]
     pub(crate) scalar: Option<Scalar>,
     pub(crate) repr: Repr,
     pub(crate) state: ValueState,
+    #[cfg_attr(feature = "serde", serde(deserialize_with = "required_option"))]
     pub(crate) tip: Option<String>,
+    #[cfg_attr(feature = "serde", serde(deserialize_with = "required_option"))]
     pub(crate) comment: Option<String>,
 }
 
@@ -347,6 +362,7 @@ impl SourceValue {
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Default)]
+#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct SourceMap {
     map: FoxTreeMap<SourceValue>,
 }
@@ -453,6 +469,7 @@ impl OptionalSourceMap for SourceMap {
 // Null implementation of SourceMap that does nothing
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone)]
+#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct NullSourceMap {
     tree: FoxTreeMap<SourceValue>,
 }

@@ -32,6 +32,7 @@ use crate::{FoxHashMap, FoxHashSet};
 // A generic node in a FoxTreeMap
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Debug, Clone)]
+#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct FoxTreeNode<T> {
     pub name: String,
     pub index: usize,
@@ -42,6 +43,7 @@ pub struct FoxTreeNode<T> {
 
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Default)]
+#[cfg_attr(feature = "serde", serde(deny_unknown_fields))]
 pub struct FoxTreeMap<T> {
     nodes: Vec<FoxTreeNode<T>>,
     name_to_index: FoxHashMap<String, usize>, // Name-to-index map for optional lookups
@@ -66,7 +68,8 @@ impl<T> FoxTreeMap<T> {
         }
     }
 
-    /// Validate a serialized source-map graph before native indexed traversal.
+    /// Validate nonempty source-map links; preserve native empty Default as
+    /// storage only. Its existing indexed consumers may panic, unchanged.
     /// Preserve native duplicate-name lookup (the last node wins), rather than
     /// rebuilding or normalizing it during snapshot restoration.
     #[cfg(feature = "serde")]

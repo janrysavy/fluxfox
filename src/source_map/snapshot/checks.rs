@@ -37,19 +37,32 @@ fn source_map_native_tree_restores_values_duplicate_names_and_append_continuatio
     assert_eq!(native_tree["nodes"][1]["data"]["state"], "Questionable");
     assert_eq!(native_tree["nodes"][1]["data"]["tip"], "native tip");
     assert_eq!(native_tree["nodes"][1]["data"]["comment"], "native comment");
+    let saved: SourceMapSnapshot = serde_json::from_value(before.clone()).unwrap();
     let mut next = round_trip(&image);
+    let mut peer = image.clone().prepare_source_map_restore(&saved).unwrap();
     assert_eq!(wire(&next), before);
+    assert_eq!(wire(&peer), before);
     assert_eq!(next.source_map().as_some().unwrap().children(0), &[1, 3]);
-    next.source_map_mut()
-        .last_node()
-        .add_child("resume", SourceValue::u8(0x5a));
-    assert_eq!(wire(&image), before); // the restored Box/tree is independent
-    image
-        .source_map_mut()
-        .last_node()
-        .add_child("resume", SourceValue::u8(0x5a));
+    fn continue_native(image: &mut DiskImage) {
+        image
+            .source_map_mut()
+            .last_node()
+            .add_child("resume", SourceValue::u8(0x5a))
+            .add_child("grandchild", SourceValue::u32(42))
+            .up()
+            .add_sibling("sibling", SourceValue::u16(0x6b));
+    }
+    continue_native(&mut next);
+    assert_eq!(wire(&image), before); // restored Box/tree is independent
+    assert_eq!(wire(&peer), before); // two candidates from the same saved state
+    continue_native(&mut image);
     assert_eq!(wire(&next), wire(&image));
+    continue_native(&mut peer);
+    assert_eq!(wire(&peer), wire(&image));
     assert_eq!(next.source_map().as_some().unwrap().node(4).0, "resume");
+    assert_eq!(next.source_map().as_some().unwrap().node(5).0, "grandchild");
+    assert_eq!(next.source_map().as_some().unwrap().node(6).0, "sibling");
+    assert_eq!(next.source_map().as_some().unwrap().children(3), &[4, 6]);
     println!(
         "SOURCE_MAP: native tree values/lookup preserved; independent JSON restore resumes identical cursor append"
     );
@@ -82,7 +95,20 @@ fn source_map_absent_null_hidden_tree_and_native_empty_default_stay_distinct() {
     assert_eq!(wire(&next), wire(&null));
     let mut empty = DiskImage::default();
     empty.source_map = Some(Box::new(SourceMap::default()));
-    assert_eq!(wire(&round_trip(&empty))["map"]["Tree"]["map"]["nodes"], json!([]));
+    let mut restored_empty = round_trip(&empty);
+    assert_eq!(wire(&restored_empty)["map"]["Tree"]["map"]["nodes"], json!([]));
+    // Storage-only native Default is not promoted to a valid indexed tree.
+    // DELIBERATE native failures establish unchanged before/after behavior.
+    println!("SOURCE_MAP: DELIBERATE native empty-tree last_node panic, original and restored");
+    assert!(std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        empty.source_map_mut().last_node();
+    }))
+    .is_err());
+    assert!(std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        restored_empty.source_map_mut().last_node();
+    }))
+    .is_err());
+    assert_eq!(wire(&restored_empty), wire(&empty));
     println!("SOURCE_MAP: None/Null/real/derived-empty owners preserved; null cursor's nonempty hidden tree retained");
 }
 
@@ -164,4 +190,74 @@ fn source_map_unknown_owner_is_refused_instead_of_normalized_to_null() {
         Err(DiskImageError::UnsupportedOperation(_))
     ));
     assert!(image.source_map().as_any().is::<UnknownOwner>());
+}
+
+#[test]
+fn source_map_nested_schema_rejects_unknown_and_missing_fields_with_explicit_nulls() {
+    let mut real = DiskImage::default();
+    real.assign_source_map(true);
+    real.source_map_mut().add_child(0, "child", SourceValue::u8(3));
+    let null = DiskImage::default();
+    for (image, pointers) in [
+        (
+            &real,
+            vec![
+                "/map/Tree",
+                "/map/Tree/map",
+                "/map/Tree/map/nodes/0",
+                "/map/Tree/map/nodes/0/data",
+            ],
+        ),
+        (
+            &null,
+            vec![
+                "/map/Null",
+                "/map/Null/tree",
+                "/map/Null/tree/nodes/0",
+                "/map/Null/tree/nodes/0/data",
+            ],
+        ),
+    ] {
+        let good = wire(image);
+        let _: SourceMapSnapshot = serde_json::from_value(good.clone()).unwrap();
+        for pointer in pointers {
+            let mut extra = good.clone();
+            extra
+                .pointer_mut(pointer)
+                .unwrap()
+                .as_object_mut()
+                .unwrap()
+                .insert("unknown_field".into(), json!(1));
+            assert!(
+                serde_json::from_value::<SourceMapSnapshot>(extra).is_err(),
+                "unknown at {pointer}"
+            );
+            let fields: Vec<_> = good
+                .pointer(pointer)
+                .unwrap()
+                .as_object()
+                .unwrap()
+                .keys()
+                .cloned()
+                .collect();
+            for field in fields {
+                let mut missing = good.clone();
+                missing
+                    .pointer_mut(pointer)
+                    .unwrap()
+                    .as_object_mut()
+                    .unwrap()
+                    .remove(&field);
+                assert!(
+                    serde_json::from_value::<SourceMapSnapshot>(missing).is_err(),
+                    "missing {pointer}/{field}"
+                );
+            }
+        }
+    }
+    let root = wire(&real);
+    for field in ["scalar", "tip", "comment"] {
+        assert!(root["map"]["Tree"]["map"]["nodes"][0]["data"][field].is_null());
+    }
+    println!("SOURCE_MAP: nested native owner/tree/node/value schema refuses unknown and omitted fields; explicit nulls pass");
 }

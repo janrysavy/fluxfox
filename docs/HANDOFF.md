@@ -1,38 +1,21 @@
 # Fork handoff
 
 Base is MartyPC's exact FluxFox dependency 5a1fb836; native algorithms stay intact.
-FINISHED LOCAL: context-only snapshot supplement preserves native write counters,
-optional contexts and cross-image/track aliases, including nested decoded/resolved
-flux caches. Strict graph preflight precedes rebinding candidates to fresh locks.
-Windows library suite: 65 passed, 0 failed, including five context tests.
+Context PR1 is integrated on main 531a0f0 after Windows/Linux CI. Counters/alias
+paths are saved separately from image bytes. Source-bound 65 serde/60 native
+checks, four actual mutants and scoped review pass. Full evidence lives in:
+https://github.com/janrysavy/pyro221_next/tree/master/docs/evidence/martypc_rpc_20261004
 
-This is not complete media/controller/Machine state: source maps, weak-bit entropy,
-external image owners and full media payload validation remain OPEN. Seeded flux
-cache tests establish storage graph preservation, not native flux continuation.
-Initial fixtures failed twice: native metasector creation increments the counter
-before 17 explicit increments (18); JSON track payload uses FluxStreamTrack tag.
-Both test expectations were corrected; the final complete suite passed.
+Source-map PR2 is WIP. Original 2c26243 passes 69 serde/60 native tests and four
+actual mutants. Review requested nested schema refusal, precise empty/cursor
+scope and independent candidate/up/sibling coverage. Follow-up adds all of these.
+Capture is between host cursor calls, not an active borrowed cursor/call frame.
+Native empty Default is preserved as storage-only; native last_node panics both
+before and after restore rather than silently repairing the original state.
+Cargo fresh=false means recreated (not cached); deletion/timestamps and Git-bound
+source already proved product freshness. Follow-up Windows suite passes 70 tests.
+Fresh source-bound controls, review and final-head CI remain pending.
 
-First source-bound run on 9eb9877 passed 65 serde/60 native tests and four actual
-omission controls. Review requested simultaneous context locking and stronger
-mixed-owner/isolation evidence. Follow-up holds all distinct locks during counter
-capture and tests aliases across images, unlike owner kinds and nested caches.
-Follow-up source-bound gates on 2135382 pass 65 serde/60 native tests after
-verified test-product deletion; all 297 tracked compilation inputs match Git
-before/after the run. Four actual mutants fail their named tests; exact source
-is restored and positive suites pass. Scoped follow-up review finds no defect.
-Only integrate after Windows/Linux CI passes on this final head. Source maps,
-weak-bit entropy, image payloads, controller and Machine/process stay OPEN.
-
-WIP source-map slice (separate branch): preserve None/null/real/empty owner states,
-including native null cursor's hidden tree. Tree preflight refuses bad indices,
-parents, membership/cycles and inconsistent duplicate-name lookup. Fresh clone
-restoration is source-map-only. Windows suite passes 69 tests, including four source-map tests and unknown-owner
-refusal. Native tree values, duplicate-name lookup and cursor append continue
-identically after JSON restoration; live original owners remain unchanged.
-Source-bound 69 serde/60 native tests and four actual mutants pass on 2c26243.
-Review remains OPEN: add nested unknown-field refusal; label native empty default
-storage-only and capture between cursor calls; extend up/sibling and independent
-candidate coverage. Review inverted Cargo fresh=false (newly built, not cached);
-actual deleted-product timestamps and source bindings pass. Weak RNG/media/
-controller/Machine/process remain OPEN. Do not integrate until fixes and review.
+Next: finish source-map final gates/review/CI and linear integration; then full
+media payload/weak-bit entropy/external owners, FDC/drive state and Machine/process
+restart. Do not assume complete media/controller/Machine snapshots exist.

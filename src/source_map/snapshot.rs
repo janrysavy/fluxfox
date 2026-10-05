@@ -33,6 +33,9 @@ impl SourceMapSnapshot {
 
 impl DiskImage {
     /// Capture exact None, NullSourceMap or SourceMap state without normalizing.
+    /// Capture at a host call boundary: borrowed active cursors/call frames are
+    /// not image-owned persistent state. Native empty Default is storage-only;
+    /// its existing indexed consumers may panic before and after restoration.
     /// A null map also owns a tree accessible via last_node(): retain that tree.
     /// Unknown third-party implementations are refused, not treated as null.
     pub fn snapshot_source_map(&self) -> Result<SourceMapSnapshot, DiskImageError> {
