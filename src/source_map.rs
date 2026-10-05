@@ -40,6 +40,11 @@
 //! You can request source map creation by setting the CREATE_SOURCE_MAP flag
 //! in [ParserWriteOptions].
 
+#[cfg(feature = "serde")]
+mod snapshot;
+#[cfg(feature = "serde")]
+pub use snapshot::SourceMapSnapshot;
+
 use crate::{
     tree_map::{FoxTreeCursor, FoxTreeMap},
     FoxHashSet,
@@ -446,6 +451,7 @@ impl OptionalSourceMap for SourceMap {
 }
 
 // Null implementation of SourceMap that does nothing
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone)]
 pub struct NullSourceMap {
     tree: FoxTreeMap<SourceValue>,

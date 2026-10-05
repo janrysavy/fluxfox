@@ -2,7 +2,7 @@ name: Native snapshot context
 
 on:
   push:
-    branches: [main, codex/snapshot-context]
+    branches: [main, codex/snapshot-context, codex/snapshot-source-map]
   pull_request:
   workflow_dispatch:
 

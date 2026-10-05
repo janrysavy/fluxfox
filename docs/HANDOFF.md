@@ -23,3 +23,11 @@ before/after the run. Four actual mutants fail their named tests; exact source
 is restored and positive suites pass. Scoped follow-up review finds no defect.
 Only integrate after Windows/Linux CI passes on this final head. Source maps,
 weak-bit entropy, image payloads, controller and Machine/process stay OPEN.
+
+WIP source-map slice (separate branch): preserve None/null/real/empty owner states,
+including native null cursor's hidden tree. Tree preflight refuses bad indices,
+parents, membership/cycles and inconsistent duplicate-name lookup. Fresh clone
+restoration is source-map-only. Windows suite passes 69 tests, including four source-map tests and unknown-owner
+refusal. Native tree values, duplicate-name lookup and cursor append continue
+identically after JSON restoration; live original owners remain unchanged.
+Fresh source-bound gates/review/final CI have not yet passed.

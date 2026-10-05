@@ -66,6 +66,44 @@ impl<T> FoxTreeMap<T> {
         }
     }
 
+    /// Validate a serialized source-map graph before native indexed traversal.
+    /// Preserve native duplicate-name lookup (the last node wins), rather than
+    /// rebuilding or normalizing it during snapshot restoration.
+    #[cfg(feature = "serde")]
+    pub(crate) fn validate_snapshot(&self) -> Result<(), &'static str> {
+        if self.nodes.is_empty() {
+            // Derived Default can produce an empty native map; preserve it.
+            return if self.name_to_index.is_empty() { Ok(()) } else { Err("empty tree lookup") };
+        }
+        let mut incoming = vec![0usize; self.nodes.len()];
+        let mut expected = FoxHashMap::default();
+        for (index, node) in self.nodes.iter().enumerate() {
+            if node.index != index || node.parent >= self.nodes.len() || (index == 0 && node.parent != 0) {
+                return Err("node index/parent");
+            }
+            expected.insert(node.name.clone(), index);
+            for &child in &node.children {
+                if child == 0 || child >= self.nodes.len() || self.nodes[child].parent != index {
+                    return Err("child index/parent");
+                }
+                incoming[child] += 1;
+                if incoming[child] != 1 { return Err("duplicate child"); }
+            }
+        }
+        if incoming[0] != 0 || incoming[1..].iter().any(|&count| count != 1) || expected != self.name_to_index {
+            return Err("tree membership/lookup");
+        }
+        let mut pending = vec![0];
+        let mut visited = vec![false; self.nodes.len()];
+        while let Some(index) = pending.pop() {
+            if visited[index] { return Err("tree cycle"); }
+            visited[index] = true;
+            pending.extend(self.nodes[index].children.iter().copied());
+        }
+        if visited.iter().any(|&seen| !seen) { return Err("unreachable node"); }
+        Ok(())
+    }
+
     pub fn root(&self) -> usize {
         0 // Root is always index 0
     }
