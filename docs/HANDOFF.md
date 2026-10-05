@@ -30,4 +30,9 @@ parents, membership/cycles and inconsistent duplicate-name lookup. Fresh clone
 restoration is source-map-only. Windows suite passes 69 tests, including four source-map tests and unknown-owner
 refusal. Native tree values, duplicate-name lookup and cursor append continue
 identically after JSON restoration; live original owners remain unchanged.
-Fresh source-bound gates/review/final CI have not yet passed.
+Source-bound 69 serde/60 native tests and four actual mutants pass on 2c26243.
+Review remains OPEN: add nested unknown-field refusal; label native empty default
+storage-only and capture between cursor calls; extend up/sibling and independent
+candidate coverage. Review inverted Cargo fresh=false (newly built, not cached);
+actual deleted-product timestamps and source bindings pass. Weak RNG/media/
+controller/Machine/process remain OPEN. Do not integrate until fixes and review.
