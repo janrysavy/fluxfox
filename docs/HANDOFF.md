@@ -14,7 +14,16 @@ Native empty Default is preserved as storage-only; native last_node panics both
 before and after restore rather than silently repairing the original state.
 Cargo fresh=false means recreated (not cached); deletion/timestamps and Git-bound
 source already proved product freshness. Follow-up Windows suite passes 70 tests.
-Fresh source-bound controls, review and final-head CI remain pending.
+Source-bound 70 serde/60 native tests and six actual omissions pass on 1ff99b1.
+Follow-up review finds no tree implementation defect; requests an independent
+pinned native baseline and an explicit real-owner dynamic-type assertion. Type
+assertions and an unchanged 5a1fb836 native fixture are added. Native baseline
+measures None/null/real ownership, hidden null cursor state, image JSON omission
+and independent clone/tree continuation. Full trees are compared in tests.
+Native decoded MFM weak bits also diverge after clone/JSON despite identical
+serialized state; 512 disabled-weak data bits match. RNG remains OPEN.
+Windows library suite passes 70 tests with the independent full-tree fixture.
+New source-bound product check/review/final CI pending.
 
 Next: finish source-map final gates/review/CI and linear integration; then full
 media payload/weak-bit entropy/external owners, FDC/drive state and Machine/process

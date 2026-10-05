@@ -29,6 +29,14 @@ fn source_map_native_tree_restores_values_duplicate_names_and_append_continuatio
         .source_map_mut()
         .add_child(0, "duplicate", SourceValue::u16(0x2468).bin(16).bad());
     let before = wire(&image);
+    // Independent public-native baseline: unchanged pinned dependency, not
+    // this snapshot module. Full raw receipt lives in the parent's evidence.
+    let baseline: Value = serde_json::from_str(include_str!("native_baseline.json")).unwrap();
+    assert_eq!(
+        baseline["dependency_commit"],
+        "5a1fb83656c3b6f933d9f91198dcca90658bfd26"
+    );
+    assert_eq!(before["map"]["Tree"], baseline["source_map"]["real_before"]);
     let native_tree = &before["map"]["Tree"]["map"];
     assert_eq!(native_tree["nodes"].as_array().unwrap().len(), 4);
     assert_eq!(native_tree["name_to_index"]["duplicate"], 3);
@@ -41,6 +49,9 @@ fn source_map_native_tree_restores_values_duplicate_names_and_append_continuatio
     let mut next = round_trip(&image);
     let mut peer = image.clone().prepare_source_map_restore(&saved).unwrap();
     assert_eq!(wire(&next), before);
+    assert!(image.source_map().as_any().is::<SourceMap>());
+    assert!(next.source_map().as_any().is::<SourceMap>());
+    assert!(peer.source_map().as_any().is::<SourceMap>());
     assert_eq!(wire(&peer), before);
     assert_eq!(next.source_map().as_some().unwrap().children(0), &[1, 3]);
     fn continue_native(image: &mut DiskImage) {
@@ -63,6 +74,7 @@ fn source_map_native_tree_restores_values_duplicate_names_and_append_continuatio
     assert_eq!(next.source_map().as_some().unwrap().node(5).0, "grandchild");
     assert_eq!(next.source_map().as_some().unwrap().node(6).0, "sibling");
     assert_eq!(next.source_map().as_some().unwrap().children(3), &[4, 6]);
+    assert_eq!(wire(&next)["map"]["Tree"], baseline["source_map"]["real_after"]);
     println!(
         "SOURCE_MAP: native tree values/lookup preserved; independent JSON restore resumes identical cursor append"
     );
@@ -82,6 +94,7 @@ fn source_map_absent_null_hidden_tree_and_native_empty_default_stay_distinct() {
         .last_node()
         .add_child("hidden", SourceValue::u8(7));
     let original = wire(&null);
+    assert_eq!(null.source_map_mut().last_node().index(), 0); // pinned native null cursor reacquires root
     let mut next = round_trip(&null);
     assert!(next.source_map().as_any().is::<NullSourceMap>() && next.source_map().as_some().is_none());
     assert_eq!(wire(&next), original);

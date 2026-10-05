@@ -1,0 +1,236 @@
+{
+  "dependency_commit": "5a1fb83656c3b6f933d9f91198dcca90658bfd26",
+  "native_product_sha256": "aea2daab87c13b31b6a9e562fc2225c05a8d5ac468ca5a83667c7e00308a496e",
+  "source_map": {
+    "absent_getter_panics": true,
+    "native_clone_independent": true,
+    "null_continued_index": 2,
+    "null_hidden_index": 1,
+    "null_type_exact": true,
+    "ordinary_image_json_omits_owner": true,
+    "real_after": {
+      "map": {
+        "name_to_index": {
+          "duplicate": 3,
+          "grandchild": 5,
+          "leaf": 2,
+          "resume": 4,
+          "root": 0,
+          "sibling": 6
+        },
+        "nodes": [
+          {
+            "children": [
+              1,
+              3
+            ],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": null,
+              "state": "Good",
+              "tip": null
+            },
+            "index": 0,
+            "name": "root",
+            "parent": 0
+          },
+          {
+            "children": [
+              2
+            ],
+            "data": {
+              "comment": "native comment",
+              "repr": {
+                "Hex": 8
+              },
+              "scalar": {
+                "U32": 305419896
+              },
+              "state": "Questionable",
+              "tip": "native tip"
+            },
+            "index": 1,
+            "name": "duplicate",
+            "parent": 0
+          },
+          {
+            "children": [],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": {
+                "String": "exact string"
+              },
+              "state": "Good",
+              "tip": null
+            },
+            "index": 2,
+            "name": "leaf",
+            "parent": 1
+          },
+          {
+            "children": [
+              4,
+              6
+            ],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Bin": 16
+              },
+              "scalar": {
+                "U16": 9320
+              },
+              "state": "Bad",
+              "tip": null
+            },
+            "index": 3,
+            "name": "duplicate",
+            "parent": 0
+          },
+          {
+            "children": [
+              5
+            ],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": {
+                "U8": 90
+              },
+              "state": "Good",
+              "tip": null
+            },
+            "index": 4,
+            "name": "resume",
+            "parent": 3
+          },
+          {
+            "children": [],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": {
+                "U32": 42
+              },
+              "state": "Good",
+              "tip": null
+            },
+            "index": 5,
+            "name": "grandchild",
+            "parent": 4
+          },
+          {
+            "children": [],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": {
+                "U16": 107
+              },
+              "state": "Good",
+              "tip": null
+            },
+            "index": 6,
+            "name": "sibling",
+            "parent": 3
+          }
+        ]
+      }
+    },
+    "real_before": {
+      "map": {
+        "name_to_index": {
+          "duplicate": 3,
+          "leaf": 2,
+          "root": 0
+        },
+        "nodes": [
+          {
+            "children": [
+              1,
+              3
+            ],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": null,
+              "state": "Good",
+              "tip": null
+            },
+            "index": 0,
+            "name": "root",
+            "parent": 0
+          },
+          {
+            "children": [
+              2
+            ],
+            "data": {
+              "comment": "native comment",
+              "repr": {
+                "Hex": 8
+              },
+              "scalar": {
+                "U32": 305419896
+              },
+              "state": "Questionable",
+              "tip": "native tip"
+            },
+            "index": 1,
+            "name": "duplicate",
+            "parent": 0
+          },
+          {
+            "children": [],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Dec": 0
+              },
+              "scalar": {
+                "String": "exact string"
+              },
+              "state": "Good",
+              "tip": null
+            },
+            "index": 2,
+            "name": "leaf",
+            "parent": 1
+          },
+          {
+            "children": [],
+            "data": {
+              "comment": null,
+              "repr": {
+                "Bin": 16
+              },
+              "scalar": {
+                "U16": 9320
+              },
+              "state": "Bad",
+              "tip": null
+            },
+            "index": 3,
+            "name": "duplicate",
+            "parent": 0
+          }
+        ]
+      }
+    },
+    "real_type_exact": true
+  }
+}
