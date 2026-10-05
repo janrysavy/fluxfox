@@ -17,5 +17,9 @@ First source-bound run on 9eb9877 passed 65 serde/60 native tests and four actua
 omission controls. Review requested simultaneous context locking and stronger
 mixed-owner/isolation evidence. Follow-up holds all distinct locks during counter
 capture and tests aliases across images, unlike owner kinds and nested caches.
-Follow-up Windows library suite passes 65 tests. WIP: fresh source-bound gates,
-review/final CI before linear integration and dependency use.
+Follow-up source-bound gates on 2135382 pass 65 serde/60 native tests after
+verified test-product deletion; all 297 tracked compilation inputs match Git
+before/after the run. Four actual mutants fail their named tests; exact source
+is restored and positive suites pass. Scoped follow-up review finds no defect.
+Only integrate after Windows/Linux CI passes on this final head. Source maps,
+weak-bit entropy, image payloads, controller and Machine/process stay OPEN.
