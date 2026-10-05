@@ -87,6 +87,7 @@ impl DiskImage {
             images: vec![],
         };
         let mut identities = BTreeMap::new();
+        let mut contexts = Vec::new();
         for image in images {
             let mut bindings = vec![];
             for slot in slots(image)? {
@@ -95,11 +96,8 @@ impl DiskImage {
                     let index = if let Some(index) = identities.get(&identity) {
                         *index
                     } else {
-                        let guard = context
-                            .try_lock()
-                            .map_err(|e| DiskImageError::SyncError(e.to_string()))?;
-                        let index = saved.contexts.len();
-                        saved.contexts.push(guard.writes);
+                        let index = contexts.len();
+                        contexts.push(context);
                         identities.insert(identity, index);
                         index
                     };
@@ -113,6 +111,16 @@ impl DiskImage {
                 });
             }
             saved.images.push(bindings);
+        }
+        // Hold every distinct context together: aliases cannot be relocked or
+        // changed between individual counter reads. Other image state still
+        // requires the caller's quiescence protocol.
+        let guards = contexts
+            .iter()
+            .map(|context| context.try_lock().map_err(|e| DiskImageError::SyncError(e.to_string())))
+            .collect::<Result<Vec<_>, _>>()?;
+        for guard in &guards {
+            saved.contexts.push(guard.writes);
         }
         Ok(saved)
     }

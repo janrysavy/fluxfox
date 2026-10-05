@@ -115,7 +115,7 @@ fn context_seeded_sparse_flux_and_missing_optional_owners_keep_exact_paths() {
     image.shared = None;
     image
         .track_pool
-        .push(Box::new(FluxStreamTrack::seeded_context_fixture(bit)));
+        .push(Box::new(FluxStreamTrack::seeded_context_fixture(bit.clone())));
     let state = saved(&[&image]);
     assert_eq!(
         state.images[0]
@@ -144,6 +144,65 @@ fn context_seeded_sparse_flux_and_missing_optional_owners_keep_exact_paths() {
         actual[4].context.as_ref().unwrap()
     ));
     assert_eq!(actual[1].context.as_ref().unwrap().lock().unwrap().writes, 1);
+    // Mix unlike owner kinds and multiple images, and use live clones as
+    // candidates: every restored owner must detach from every original lock.
+    let mut metadata = metadata_image();
+    metadata.track_pool[0].as_metasector_track_mut().unwrap().shared = bit.shared.as_ref().unwrap().clone();
+    let mut bit_image = DiskImage::default();
+    bit_image.shared = bit.shared.clone();
+    bit_image.track_pool.push(Box::new(bit.clone()));
+    let mixed = [&image, &metadata, &bit_image];
+    let expected = vec![
+        vec![None, Some(0), Some(0), None, Some(0)],
+        vec![Some(1), Some(0)],
+        vec![Some(0), Some(0)],
+    ];
+    assert_eq!(graph(&mixed), expected);
+    let mixed_state = saved(&mixed);
+    let next =
+        DiskImage::prepare_context_restore(vec![image.clone(), metadata.clone(), bit_image.clone()], &mixed_state)
+            .unwrap();
+    assert_eq!(graph(&next.iter().collect::<Vec<_>>()), expected);
+    let original_contexts: Vec<_> = mixed
+        .iter()
+        .flat_map(|image| slots(image).unwrap())
+        .filter_map(|slot| slot.context)
+        .collect();
+    let original_counts: Vec<_> = original_contexts.iter().map(|arc| arc.lock().unwrap().writes).collect();
+    for restored_image in &next {
+        for context in slots(restored_image)
+            .unwrap()
+            .iter()
+            .filter_map(|slot| slot.context.as_ref())
+        {
+            for original in &original_contexts {
+                assert!(!Arc::ptr_eq(context, original));
+            }
+        }
+    }
+    let next_flux_context = slots(&next[0]).unwrap()[1].context.as_ref().unwrap().clone();
+    next_flux_context.lock().unwrap().writes += 11;
+    for (image_index, slot_index) in [(0, 1), (0, 2), (0, 4), (1, 1), (2, 0), (2, 1)] {
+        assert_eq!(
+            slots(&next[image_index]).unwrap()[slot_index]
+                .context
+                .as_ref()
+                .unwrap()
+                .lock()
+                .unwrap()
+                .writes,
+            12
+        );
+    }
+    assert_eq!(next[1].write_ct(), 1); // independent metadata image root
+    assert_eq!(
+        original_contexts
+            .iter()
+            .map(|arc| arc.lock().unwrap().writes)
+            .collect::<Vec<_>>(),
+        original_counts
+    );
+    assert_eq!(graph(&mixed), expected);
     // Equal slot counts do not establish equal cache positions.
     let mut moved = serde_json::to_value(&image).unwrap();
     moved["track_pool"][0]["FluxStreamTrack"]["decoded_revolutions"]

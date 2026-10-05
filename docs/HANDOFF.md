@@ -13,5 +13,9 @@ Initial fixtures failed twice: native metasector creation increments the counter
 before 17 explicit increments (18); JSON track payload uses FluxStreamTrack tag.
 Both test expectations were corrected; the final complete suite passed.
 
-Next: actual controls/fresh source-bound tests and scoped review, then final
-Windows/Linux CI and linear integration before MartyPC dependency use.
+First source-bound run on 9eb9877 passed 65 serde/60 native tests and four actual
+omission controls. Review requested simultaneous context locking and stronger
+mixed-owner/isolation evidence. Follow-up holds all distinct locks during counter
+capture and tests aliases across images, unlike owner kinds and nested caches.
+Follow-up Windows library suite passes 65 tests. WIP: fresh source-bound gates,
+review/final CI before linear integration and dependency use.
