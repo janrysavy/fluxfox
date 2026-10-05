@@ -26,7 +26,14 @@ impl SourceMapSnapshot {
         }
         let result = match &self.map {
             SavedMap::Absent => Ok(()),
-            SavedMap::Null(map) => map.tree.validate_snapshot(false),
+            SavedMap::Null(map) => map.tree.validate_snapshot(false).and_then(|()| {
+                // Native null construction/cursors cannot rename the root.
+                if map.tree.node(0).name == "root" {
+                    Ok(())
+                } else {
+                    Err("null source-map root name")
+                }
+            }),
             SavedMap::Tree(map) => map.map.validate_snapshot(true),
         };
         result.map_err(|message| DiskImageError::ImageCorruptError(format!("source-map snapshot: {message}")))
@@ -39,6 +46,7 @@ impl DiskImage {
     /// not image-owned persistent state. Native empty Default is storage-only;
     /// its existing indexed consumers may panic before and after restoration.
     /// A null map also owns a tree accessible via last_node(): retain that tree.
+    /// Real public native Deserialize may name index0 differently; preserve it.
     /// Unknown third-party implementations are refused, not treated as null.
     pub fn snapshot_source_map(&self) -> Result<SourceMapSnapshot, DiskImageError> {
         let map = match &self.source_map {

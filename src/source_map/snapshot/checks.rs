@@ -335,3 +335,34 @@ fn source_map_ordinary_serde_retains_pinned_native_field_tolerance() {
     }
     println!("SOURCE_MAP: ordinary serde retains four native unknown-field and three nullable omission behaviors; snapshot remains strict");
 }
+
+#[test]
+fn source_map_native_serde_renamed_root_preserved_but_impossible_null_root_refused() {
+    // Original public SourceMap Deserialize accepts a renamed root and its
+    // native add_child consumer works: measured on unchanged5a1fb836. Root is
+    // index0, not a reserved lookup key; a child may also be named "root".
+    let mut renamed = serde_json::to_value(SourceMap::new()).unwrap();
+    renamed["map"]["nodes"][0]["name"] = json!("renamed-root");
+    renamed["map"]["name_to_index"] = json!({"renamed-root":0});
+    let mut real = DiskImage::default();
+    real.source_map = Some(Box::new(serde_json::from_value::<SourceMap>(renamed).unwrap()));
+    let before = wire(&real);
+    let mut next = round_trip(&real);
+    assert_eq!(wire(&next), before);
+    assert_eq!(next.source_map().as_some().unwrap().node(0).0, "renamed-root");
+    real.source_map_mut().add_child(0, "root", SourceValue::u8(5));
+    next.source_map_mut().add_child(0, "root", SourceValue::u8(5));
+    assert_eq!(wire(&next), wire(&real));
+    assert_eq!(wire(&next)["map"]["Tree"]["map"]["name_to_index"]["root"], 1);
+    // Original NullSourceMap has no public Deserialize and its constructor/API
+    // cannot rename its root. Refuse this impossible null payload only.
+    let live = DiskImage::default();
+    let original = wire(&live);
+    let mut impossible = original.clone();
+    impossible["map"]["Null"]["tree"]["nodes"][0]["name"] = json!("renamed-root");
+    impossible["map"]["Null"]["tree"]["name_to_index"] = json!({"renamed-root":0});
+    let saved: SourceMapSnapshot = serde_json::from_value(impossible).unwrap();
+    assert!(live.clone().prepare_source_map_restore(&saved).is_err());
+    assert_eq!(wire(&live), original);
+    println!("SOURCE_MAP: measured native serde renamed real root preserved; impossible null root refused; child named root allowed");
+}

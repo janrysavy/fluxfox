@@ -36,8 +36,15 @@ now belongs only to the snapshot format; native public serde derives retain the
 original tolerance. A fresh unchanged5a1fb836 probe proves four unknown-field
 locations/three nullable omissions; regression fails before the fix. All nine
 actual omissions fail their named tests, exact restoration precedes fresh
-all-input-bound72 serde/60 native products. Final scoped review/CI remain pending;
-no completed media/controller/Machine/process restart is claimed.
+all-input-bound72 serde/60 native products. Follow-up accepts strictness/isolation
+but requests a root-name guard and direct native fixture provenance. Unchanged
+native public Deserialize/consumer proves renamed real roots are valid, so a
+blanket name restriction would wrongly reject native state. Null roots alone
+are constructor-fixed: actual omitted name guard fails; exact restoration
+precedes fresh all-input-bound73/60 products. Parent's executable replay gate
+executes the SHA-256-pinned original product and checks full trees against both
+fixture and frozen receipt; wrong product is refused. Final review/CI pending.
+No completed media/controller/Machine/process restart is claimed.
 
 Next: finish source-map final gates/review/CI and linear integration; then full
 media payload/weak-bit entropy/external owners, FDC/drive state and Machine/process
