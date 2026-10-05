@@ -784,6 +784,35 @@ impl FluxStreamTrack {
         None
     }
 
+    // Context graph traversal must include cached decoded/resolved tracks;
+    // replacing only the outer flux context leaves detached counters behind.
+    #[cfg(feature = "serde")]
+    pub(crate) fn snapshot_context_slots(&self) -> Vec<(String, Option<Arc<Mutex<SharedDiskContext>>>)> {
+        let mut slots = vec![("flux".into(), self.shared.clone())];
+        for (index, track) in self.decoded_revolutions.iter().enumerate() {
+            if let Some(track) = track { slots.push((format!("flux/decoded/{index}"), track.shared.clone())); }
+        }
+        if let Some(track) = &self.resolved { slots.push(("flux/resolved".into(), track.shared.clone())); }
+        slots
+    }
+
+    #[cfg(feature = "serde")]
+    pub(crate) fn restore_snapshot_context_slots(&mut self, next: &mut impl FnMut() -> Option<Arc<Mutex<SharedDiskContext>>>) {
+        self.shared = next();
+        for track in self.decoded_revolutions.iter_mut().flatten() { track.shared = next(); }
+        if let Some(track) = &mut self.resolved { track.shared = next(); }
+    }
+
+    #[cfg(all(test, feature = "serde"))]
+    pub(crate) fn seeded_context_fixture(bit: BitStreamTrack) -> Self {
+        let mut flux = Self::new();
+        flux.shared = bit.shared.clone();
+        let mut absent = bit.clone(); absent.shared = None;
+        flux.decoded_revolutions = vec![Some(bit.clone()), None, Some(absent)];
+        flux.resolved = Some(bit);
+        flux
+    }
+
     pub(crate) fn set_shared(&mut self, shared: Arc<Mutex<SharedDiskContext>>) {
         self.shared = Some(shared);
     }

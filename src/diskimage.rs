@@ -32,6 +32,11 @@
 //! A [DiskImage] should not be created directly. Instead, use an [ImageBuilder] to create a new
 //! disk image with specified parameters.
 
+#[cfg(feature = "serde")]
+mod snapshot_context;
+#[cfg(feature = "serde")]
+pub use snapshot_context::DiskContextSnapshot;
+
 use crate::{
     bitstream_codec::mfm::MfmCodec,
     track::bitstream::BitStreamTrack,

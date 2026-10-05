@@ -1937,6 +1937,7 @@ dependencies = [
  "regex",
  "rhai",
  "serde",
+ "serde_json",
  "sha1",
  "sha1_smol",
  "strum",

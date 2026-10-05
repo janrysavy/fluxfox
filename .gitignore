@@ -73,3 +73,6 @@ test*
 
 # Archived stuff
 /archive
+
+# Snapshot unit tests are source, not scratch output.
+!/src/diskimage/snapshot_context/tests.rs
